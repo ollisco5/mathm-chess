@@ -1,5 +1,6 @@
 use crate::{error::IllegalMove, piece, Color, Coordinate, Error, Move, Piece};
 
+#[derive(derive_getters::Getters)]
 pub struct Board {
     tiles: [[Option<Piece>; 8]; 8],
     next_move: Color,
@@ -11,34 +12,6 @@ pub struct Board {
 }
 
 impl Board {
-    pub fn tiles(&self) -> &[[Option<Piece>; 8]; 8] {
-        &self.tiles
-    }
-
-    pub fn next_move(&self) -> Color {
-        self.next_move
-    }
-
-    pub fn en_passant_square(&self) -> Option<Coordinate> {
-        self.en_passant_square
-    }
-
-    pub fn can_castle_white_kingside(&self) -> bool {
-        self.can_castle_white_kingside
-    }
-
-    pub fn can_castle_white_queenside(&self) -> bool {
-        self.can_castle_white_queenside
-    }
-
-    pub fn can_castle_black_kingside(&self) -> bool {
-        self.can_castle_black_kingside
-    }
-
-    pub fn can_castle_black_queenside(&self) -> bool {
-        self.can_castle_black_queenside
-    }
-
     pub fn make_move<M>(&mut self, _move: M) -> Result<Option<PromotionWanted>, Error>
     where
         M: Into<Move>,

@@ -41,6 +41,7 @@ mod tests {
     #[test]
     fn it_works() {
         let mut board = Board::default();
+        assert!(*board.next_move() == Color::White);
         assert!(matches!(
             board.make_move(Move {
                 from: Coordinate(0, 1),
