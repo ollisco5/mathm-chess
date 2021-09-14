@@ -2,11 +2,13 @@
 
 mod board;
 mod error;
+mod game;
 pub mod piece;
 mod util;
 
 pub use board::Board;
 pub use error::Error;
+pub use game::Game;
 pub use piece::Piece;
 pub use util::{Color, Move, Position};
 
