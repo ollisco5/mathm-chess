@@ -20,6 +20,24 @@ impl Piece {
     pub fn new(color: Color, kind: Kind) -> Self {
         Self { color, kind }
     }
+    pub fn emoji(&self) -> char {
+        use Color::*;
+        use Kind::*;
+        match (self.color, self.kind) {
+            (Black, Pawn) => '♟',
+            (White, Pawn) => '♙',
+            (Black, Rook) => '♜',
+            (White, Rook) => '♖',
+            (Black, Knight) => '♞',
+            (White, Knight) => '♘',
+            (Black, Bishop) => '♝',
+            (White, Bishop) => '♗',
+            (Black, Queen) => '♛',
+            (White, Queen) => '♕',
+            (Black, King) => '♚',
+            (White, King) => '♔',
+        }
+    }
     pub fn from_name(name: char) -> Result<Self, Error> {
         Ok(Piece {
             color: if name.is_ascii_uppercase() {
@@ -40,7 +58,7 @@ impl Kind {
             'n' | 'N' => Ok(Self::Knight),
             'b' | 'B' => Ok(Self::Bishop),
             'q' | 'Q' => Ok(Self::Queen),
-            'k' | 'K' => Ok(Self::Knight),
+            'k' | 'K' => Ok(Self::King),
             _ => Err(Error::ParsingError),
         }
     }

@@ -1,19 +1,6 @@
 use crate::*;
 
 #[test]
-fn it_works() {
-    let mut board = Board::default();
-    assert!(board.next_to_move() == Color::White);
-    assert!(matches!(
-        board.make_move(Move {
-            from: (0, 1).into(),
-            to: (0, 2).into(),
-        }),
-        Err(Error::IllegalMove(error::IllegalMove::OtherPlayersTurn))
-    ));
-}
-
-#[test]
 fn arabic_parsing() {
     for (input, output) in [
         ("a4a5", Move::from(((0, 3).into(), (0, 4).into()))),
@@ -55,4 +42,103 @@ fn piece_parsing_fail() {
     for c in "acdefghijlmostuvwxyzACDEFGHIJLMOSTUVWXYZ".chars() {
         assert!(Piece::from_name(c).is_err())
     }
+}
+
+#[test]
+fn default_board() {
+    assert_eq!(
+        Board::default(),
+        Board::new(
+            [
+                [
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::Rook,
+                    }),
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::Knight,
+                    }),
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::Bishop,
+                    }),
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::Queen,
+                    }),
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::King,
+                    }),
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::Bishop,
+                    }),
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::Knight,
+                    }),
+                    Some(Piece {
+                        color: Color::Black,
+                        kind: crate::piece::Kind::Rook,
+                    }),
+                ],
+                [Some(Piece {
+                    color: Color::Black,
+                    kind: crate::piece::Kind::Pawn,
+                }); 8],
+                [None; 8],
+                [None; 8],
+                [None; 8],
+                [None; 8],
+                [Some(Piece {
+                    color: Color::White,
+                    kind: crate::piece::Kind::Pawn,
+                }); 8],
+                [
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::Rook,
+                    }),
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::Knight,
+                    }),
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::Bishop,
+                    }),
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::Queen,
+                    }),
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::King,
+                    }),
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::Bishop,
+                    }),
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::Knight,
+                    }),
+                    Some(Piece {
+                        color: Color::White,
+                        kind: crate::piece::Kind::Rook,
+                    }),
+                ],
+            ],
+            Color::White,
+            true,
+            true,
+            true,
+            true,
+            None,
+            0,
+            1,
+        )
+    );
 }
