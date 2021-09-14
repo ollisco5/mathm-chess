@@ -32,3 +32,27 @@ fn arabic_parsing_fails() {
     assert!(matches!(Move::arabic("a2u3"), Err(Error::ParsingError),));
     assert!(matches!(Move::arabic("a4a4 "), Err(Error::ParsingError),));
 }
+
+#[test]
+fn piece_parsing() {
+    for color in [Color::White, Color::Black] {
+        use piece::Kind::*;
+        for (c, kind) in [('p', Pawn), ('r', Rook), ('b', Bishop)] {
+            assert_eq!(
+                Piece::from_name(if color == Color::Black {
+                    c
+                } else {
+                    c.to_ascii_uppercase()
+                }),
+                Ok(Piece::new(color, kind)),
+            );
+        }
+    }
+}
+
+#[test]
+fn piece_parsing_fail() {
+    for c in "acdefghijlmostuvwxyzACDEFGHIJLMOSTUVWXYZ".chars() {
+        assert!(Piece::from_name(c).is_err())
+    }
+}

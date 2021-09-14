@@ -17,6 +17,9 @@ pub enum Kind {
 }
 
 impl Piece {
+    pub fn new(color: Color, kind: Kind) -> Self {
+        Self { color, kind }
+    }
     pub fn from_name(name: char) -> Result<Self, Error> {
         Ok(Piece {
             color: if name.is_ascii_uppercase() {
