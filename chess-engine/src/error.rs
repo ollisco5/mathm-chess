@@ -5,7 +5,7 @@ use std::fmt;
 pub enum Error {
     IllegalMove(IllegalMove),
     UnknwonPiece(char),
-    InvalidNotation { pos: usize, expected: String },
+    ParsingError,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -27,11 +27,7 @@ impl fmt::Display for Error {
         match self {
             Self::IllegalMove(i) => write!(f, "Illegal move, {}", i),
             Self::UnknwonPiece(c) => write!(f, "Unknown piece {}", c),
-            Self::InvalidNotation { pos, expected } => write!(
-                f,
-                "Invalid notation at position {}, expected {}",
-                pos, expected
-            ),
+            Self::ParsingError => write!(f, "Parsing error"),
         }
     }
 }

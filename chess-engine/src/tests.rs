@@ -27,20 +27,8 @@ fn arabic_parsing() {
 
 #[test]
 fn arabic_parsing_fails() {
-    assert!(matches!(
-        Move::arabic("a4a"),
-        Err(Error::InvalidNotation { pos: 3, .. }),
-    ));
-    assert!(matches!(
-        Move::arabic("i2a3"),
-        Err(Error::InvalidNotation { pos: 0, .. }),
-    ));
-    assert!(matches!(
-        Move::arabic("a2u3"),
-        Err(Error::InvalidNotation { pos: 2, .. }),
-    ));
-    assert!(matches!(
-        Move::arabic("a4a4 "),
-        Err(Error::InvalidNotation { pos: 4, .. }),
-    ));
+    assert!(matches!(Move::arabic("a4a"), Err(Error::ParsingError),));
+    assert!(matches!(Move::arabic("i2a3"), Err(Error::ParsingError),));
+    assert!(matches!(Move::arabic("a2u3"), Err(Error::ParsingError),));
+    assert!(matches!(Move::arabic("a4a4 "), Err(Error::ParsingError),));
 }

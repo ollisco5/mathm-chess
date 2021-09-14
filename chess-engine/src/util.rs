@@ -19,22 +19,10 @@ impl Move {
         match s.len() {
             4 => Ok(Self {
                 from: s[..2].parse()?,
-                to: s[2..4].parse().map_err(|err| match err {
-                    Error::InvalidNotation { pos, expected } => Error::InvalidNotation {
-                        pos: pos + 2,
-                        expected,
-                    },
-                    e => e,
-                })?,
+                to: s[2..4].parse()?,
             }),
-            len @ 5.. => Err(Error::InvalidNotation {
-                pos: len - 1,
-                expected: "end of string".into(),
-            }),
-            len @ 0..=3 => Err(Error::InvalidNotation {
-                pos: len,
-                expected: "more data".into(),
-            }),
+            5.. => Err(Error::ParsingError),
+            0..=3 => Err(Error::ParsingError),
             _ => unreachable!(),
         }
     }
@@ -72,28 +60,15 @@ impl FromStr for Position {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.as_bytes();
         if s.len() > 2 {
-            return Err(Error::InvalidNotation {
-                pos: 3,
-                expected: "end of input".into(),
-            });
+            return Err(Error::ParsingError);
         }
         let file = match s.get(0) {
             c @ Some(b'a'..=b'h') => c.unwrap() - b'a',
-            _ => {
-                return Err(Error::InvalidNotation {
-                    pos: 0,
-                    expected: "a to h".into(),
-                })
-            }
+            _ => return Err(Error::ParsingError),
         };
         let rank = match s[1] {
             c @ b'1'..=b'8' => c - b'1',
-            _ => {
-                return Err(Error::InvalidNotation {
-                    pos: 1,
-                    expected: "a to h".into(),
-                })
-            }
+            _ => return Err(Error::ParsingError),
         };
         Ok(Self { file, rank })
     }
