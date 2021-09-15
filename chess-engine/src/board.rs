@@ -82,8 +82,7 @@ impl fmt::Display for Board {
         write!(
             f,
             "{}",
-            Board::default()
-                .tiles()
+            self.tiles()
                 .iter()
                 .map(|row| format!(
                     "{}\n",
