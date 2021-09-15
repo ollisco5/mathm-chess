@@ -81,13 +81,15 @@ impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}",
+            "{}  A B C D E F G H\n",
             self.tiles()
                 .iter()
-                .map(|row| format!(
-                    "{}\n",
+                .enumerate()
+                .map(|(i, row)| format!(
+                    "{}{}\n",
+                    i + 1,
                     row.iter()
-                        .map(|p| p.as_ref().map(Piece::emoji).unwrap_or(' '))
+                        .map(|p| format!(" {}", p.as_ref().map(Piece::emoji).unwrap_or('.')))
                         .collect::<String>()
                 ))
                 .collect::<String>()
