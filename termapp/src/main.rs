@@ -1,10 +1,12 @@
-use chess_engine::{Board, Game, Move};
+use chess_engine::{piece, Board, Game, Move};
 use std::io::BufRead;
 
 fn main() {
     let mut game = Game::new(Board::default());
     print!("{}", game.board().to_string());
-    for line in std::io::stdin().lock().lines().map(|line| line.unwrap()) {
+    let stdin = std::io::stdin();
+    let mut lines = stdin.lock().lines().map(|line| line.unwrap());
+    while let Some(line) = lines.next() {
         let m = match Move::arabic(line.trim()) {
             Ok(m) => m,
             Err(err) => {
@@ -13,7 +15,15 @@ fn main() {
             }
         };
 
-        match game.make_move(m, || unimplemented!()) {
+        match game.make_move(m, || loop {
+            break match piece::Kind::from_name(lines.next().unwrap().chars().next().unwrap()) {
+                Ok(kind) => kind,
+                Err(err) => {
+                    println!("{}", err);
+                    continue;
+                }
+            };
+        }) {
             Ok(()) => (),
             Err(err) => {
                 println!("{}", err);
