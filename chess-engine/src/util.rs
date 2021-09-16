@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 use crate::Error;
 
@@ -25,6 +25,9 @@ impl Move {
             0..=3 => Err(Error::ParsingError),
             _ => unreachable!(),
         }
+    }
+    pub fn as_arabic(&self) -> String {
+        format!("{}{}", self.from, self.to)
     }
 }
 
@@ -92,5 +95,16 @@ impl FromStr for Position {
             _ => return Err(Error::ParsingError),
         };
         Ok(Self { file, rank })
+    }
+}
+
+impl fmt::Display for Position {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}{}",
+            (self.file + b'a') as char,
+            (self.rank + b'0') as char,
+        )
     }
 }
