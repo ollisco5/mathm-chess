@@ -47,8 +47,14 @@ impl Board {
     pub fn next_to_move(&self) -> Color {
         self.next_to_move
     }
+    pub fn switch_next_to_move(&mut self) {
+        self.next_to_move = self.next_to_move.other();
+    }
     pub fn en_passant_square(&self) -> Option<Position> {
         self.en_passant_square
+    }
+    pub fn set_en_passant_square(&mut self, eps: Option<Position>) {
+        self.en_passant_square = eps;
     }
     pub fn can_castle_white_kingside(&self) -> bool {
         self.can_castle_white_kingside

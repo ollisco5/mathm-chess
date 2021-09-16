@@ -34,6 +34,24 @@ pub enum Color {
     Black,
 }
 
+impl Color {
+    pub fn other(&mut self) -> Color {
+        match self {
+            Self::White => Self::Black,
+            Self::Black => Self::White,
+        }
+    }
+    pub fn forwards(&self) -> i8 {
+        match self {
+            Self::White => -1,
+            Self::Black => 1,
+        }
+    }
+    pub fn backwards(&self) -> i8 {
+        -self.forwards()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Position {
     file: u8,
@@ -41,6 +59,9 @@ pub struct Position {
 }
 
 impl Position {
+    pub fn new(file: u8, rank: u8) -> Self {
+        Self { file, rank }
+    }
     pub fn file(&self) -> u8 {
         self.file
     }
