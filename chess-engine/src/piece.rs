@@ -1,6 +1,12 @@
-use crate::{Board, Color, Error, Move};
+use crate::{Board, Color, Error, Move, Position};
 
+mod bishop;
+mod king;
+mod knight;
 mod pawn;
+mod queen;
+mod rook;
+mod util;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Piece {
@@ -50,14 +56,22 @@ impl Piece {
             kind: Kind::from_name(name)?,
         })
     }
-    pub fn can_move(&self, r#move: Move, board: &Board) -> bool {
+    pub fn can_move(&self, move_: Move, board: &Board) -> bool {
+        self.get_moves(board, move_.from).contains(&move_.to)
+    }
+    pub fn get_moves(&self, board: &Board, from: Position) -> Vec<Position> {
+        let mut ret = vec![];
+        self.append_moves(board, from, &mut ret);
+        ret
+    }
+    pub fn append_moves(&self, board: &Board, from: Position, dst: &mut Vec<Position>) {
         match self.kind {
-            Kind::Pawn => pawn::can_move(r#move, board),
-            Kind::Rook => pawn::can_move(r#move, board),
-            Kind::Knight => pawn::can_move(r#move, board),
-            Kind::Bishop => pawn::can_move(r#move, board),
-            Kind::Queen => pawn::can_move(r#move, board),
-            Kind::King => pawn::can_move(r#move, board),
+            Kind::Pawn => pawn::append_moves(board, from, dst),
+            Kind::Rook => rook::append_moves(board, from, dst),
+            Kind::Knight => knight::append_moves(board, from, dst),
+            Kind::Bishop => bishop::append_moves(board, from, dst),
+            Kind::Queen => queen::append_moves(board, from, dst),
+            Kind::King => king::append_moves(board, from, dst),
         }
     }
 }

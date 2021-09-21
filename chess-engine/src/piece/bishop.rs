@@ -1,5 +1,7 @@
-use crate::{Board, Move};
+use crate::{Board, Position};
 
-pub fn can_move(_move: Move, _board: &Board) -> bool {
-    true
+use super::util::floating_moves;
+
+pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
+    floating_moves(&[(1, 1), (1, -1), (-1, -1), (-1, 1)], board, from, dst)
 }

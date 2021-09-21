@@ -1,5 +1,5 @@
-use crate::{Board, Move};
+use crate::{Board, Position};
 
-pub fn can_move(_move: Move, _board: &Board) -> bool {
-    true
+pub fn append_moves(_board: &Board, _from: Position, _dst: &mut Vec<Position>) {
+    unimplemented!()
 }
