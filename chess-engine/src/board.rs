@@ -21,12 +21,21 @@ impl Board {
     pub fn tiles(&self) -> &[[Option<Piece>; 8]; 8] {
         &self.tiles
     }
+    /// Signifies wich color in next up to make a move. Starts as `Color::White`
+    /// on a `Default` board
     pub fn next_to_move(&self) -> Color {
         self.next_to_move
     }
+    /// Sets `next_to_move` to the other color and adds to move_number if
+    /// `next_to_move` was black before call
     pub fn switch_next_to_move(&mut self) {
+        if self.next_to_move() == Color::Black {
+            self.move_number += 1;
+        }
         self.next_to_move = self.next_to_move.other();
     }
+    /// Retrieves the tile where a pawn can move to capture another pawn that
+    /// just moved two ranks
     pub fn en_passant_square(&self) -> Option<Position> {
         self.en_passant_square
     }
@@ -45,12 +54,16 @@ impl Board {
             Color::Black => self.can_castle_black_queenside,
         }
     }
+    /// Marks that `color` can no longer castle on the kingside. Can be called
+    /// even if it was not possible before calling (but will have no effect)
     pub fn cannot_castle_kingside(&mut self, color: Color) {
         match color {
             Color::White => self.can_castle_white_kingside = false,
             Color::Black => self.can_castle_black_kingside = false,
         }
     }
+    /// Marks that `color` can no longer castle on the queenside. Can be called
+    /// even if it was not possible before calling (but will have no effect)
     pub fn cannot_castle_queenside(&mut self, color: Color) {
         match color {
             Color::White => self.can_castle_white_queenside = false,
