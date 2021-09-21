@@ -6,41 +6,18 @@ mod fen;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Board {
-    tiles: [[Option<Piece>; 8]; 8],
-    next_to_move: Color,
-    can_castle_white_kingside: bool,
-    can_castle_white_queenside: bool,
-    can_castle_black_kingside: bool,
-    can_castle_black_queenside: bool,
-    en_passant_square: Option<Position>,
-    halfmove_counter: u16,
-    move_number: u16,
+    pub(crate) tiles: [[Option<Piece>; 8]; 8],
+    pub(crate) next_to_move: Color,
+    pub(crate) can_castle_white_kingside: bool,
+    pub(crate) can_castle_white_queenside: bool,
+    pub(crate) can_castle_black_kingside: bool,
+    pub(crate) can_castle_black_queenside: bool,
+    pub(crate) en_passant_square: Option<Position>,
+    pub(crate) halfmove_counter: u16,
+    pub(crate) move_number: u16,
 }
 
 impl Board {
-    pub fn new(
-        tiles: [[Option<Piece>; 8]; 8],
-        next_to_move: Color,
-        can_castle_white_kingside: bool,
-        can_castle_white_queenside: bool,
-        can_castle_black_kingside: bool,
-        can_castle_black_queenside: bool,
-        en_passant_square: Option<Position>,
-        halfmove_counter: u16,
-        move_number: u16,
-    ) -> Self {
-        Self {
-            tiles,
-            next_to_move,
-            can_castle_white_kingside,
-            can_castle_white_queenside,
-            can_castle_black_kingside,
-            can_castle_black_queenside,
-            en_passant_square,
-            halfmove_counter,
-            move_number,
-        }
-    }
     pub fn tiles(&self) -> &[[Option<Piece>; 8]; 8] {
         &self.tiles
     }
@@ -97,9 +74,9 @@ impl ops::IndexMut<Position> for Board {
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
+        writeln!(
             f,
-            "{}  A B C D E F G H\n",
+            "{}  A B C D E F G H",
             self.tiles()
                 .iter()
                 .enumerate()

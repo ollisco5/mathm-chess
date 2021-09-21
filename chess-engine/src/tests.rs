@@ -48,8 +48,8 @@ fn piece_parsing_fail() {
 fn default_board() {
     assert_eq!(
         Board::default(),
-        Board::new(
-            [
+        Board {
+            tiles: [
                 [
                     Some(Piece {
                         color: Color::Black,
@@ -131,14 +131,14 @@ fn default_board() {
                     }),
                 ],
             ],
-            Color::White,
-            true,
-            true,
-            true,
-            true,
-            None,
-            0,
-            1,
-        )
+            next_to_move: Color::White,
+            can_castle_white_kingside: true,
+            can_castle_white_queenside: true,
+            can_castle_black_kingside: true,
+            can_castle_black_queenside: true,
+            en_passant_square: None,
+            halfmove_counter: 0,
+            move_number: 1,
+        }
     );
 }

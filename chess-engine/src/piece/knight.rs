@@ -14,7 +14,7 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
         ]
         .iter()
         .map(|(file, rank)| Position::new_i8(from.file() as i8 + file, from.rank() as i8 + rank))
-        .filter_map(|pos| pos)
+        .flatten()
         .filter(|&pos| {
             !matches!(
                 board[pos],
