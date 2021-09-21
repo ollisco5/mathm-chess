@@ -62,7 +62,24 @@ pub struct Position {
 }
 
 impl Position {
-    pub fn new(file: u8, rank: u8) -> Self {
+    pub fn new(file: u8, rank: u8) -> Option<Self> {
+        if file < 8 && rank < 8 {
+            Some(Self { file, rank })
+        } else {
+            None
+        }
+    }
+    pub fn new_i8(file: i8, rank: i8) -> Option<Self> {
+        if 0 < file && file < 8 && 0 < rank && rank < 8 {
+            Some(Self {
+                file: file as u8,
+                rank: rank as u8,
+            })
+        } else {
+            None
+        }
+    }
+    pub fn new_unchecked(file: u8, rank: u8) -> Self {
         Self { file, rank }
     }
     pub fn file(&self) -> u8 {

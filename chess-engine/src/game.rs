@@ -58,7 +58,7 @@ impl Game {
         // Handle en passant capture
         if piece.kind == piece::Kind::Pawn && Some(move_.to) == self.board.en_passant_square() {
             let target_rank = move_.to.rank() as i8 + current_color.backwards();
-            let target = Position::new(move_.to.file(), target_rank as u8);
+            let target = Position::new_unchecked(move_.to.file(), target_rank as u8);
             self.board[target] = None;
         }
 
@@ -67,7 +67,10 @@ impl Game {
         if piece.kind == piece::Kind::Pawn && delta_rank.abs() == 2 {
             let eps_rank = move_.to.rank() as i8 + current_color.backwards();
             self.board
-                .set_en_passant_square(Some(Position::new(move_.to.file(), eps_rank as u8)));
+                .set_en_passant_square(Some(Position::new_unchecked(
+                    move_.to.file(),
+                    eps_rank as u8,
+                )));
         } else {
             self.board.set_en_passant_square(None);
         }
