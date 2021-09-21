@@ -1,4 +1,4 @@
-use crate::{error, piece, Board, Error, Move, Piece, Position};
+use crate::{error, piece, Board, Color, Error, Move, Piece, Position};
 
 pub struct Game {
     board: Board,
@@ -54,6 +54,23 @@ impl Game {
             let rook_dst_file = move_.to.file() as i8 + -delta_file / 2;
             let rook_dst = Position::new_unchecked(rook_dst_file as u8, move_.to.rank());
             self.board[rook_dst] = self.board[rook_pos].take();
+        }
+
+        // Handle castling marking
+        match (piece.kind, current_color, move_.from.file()) {
+            (piece::Kind::King, Color::White, _) => {
+                self.board.cannot_castle_white_kingside();
+                self.board.cannot_castle_white_queenside();
+            }
+            (piece::Kind::Rook, Color::White, 0) => self.board.cannot_castle_white_queenside(),
+            (piece::Kind::Rook, Color::White, 7) => self.board.cannot_castle_white_kingside(),
+            (piece::Kind::King, Color::Black, _) => {
+                self.board.cannot_castle_black_kingside();
+                self.board.cannot_castle_black_queenside();
+            }
+            (piece::Kind::Rook, Color::Black, 0) => self.board.cannot_castle_black_queenside(),
+            (piece::Kind::Rook, Color::Black, 7) => self.board.cannot_castle_black_kingside(),
+            _ => {}
         }
 
         // Handle en passant capture

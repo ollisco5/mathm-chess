@@ -68,6 +68,18 @@ impl Board {
     pub fn can_castle_black_queenside(&self) -> bool {
         self.can_castle_black_queenside
     }
+    pub fn cannot_castle_white_kingside(&mut self) {
+        self.can_castle_white_kingside = false;
+    }
+    pub fn cannot_castle_white_queenside(&mut self) {
+        self.can_castle_white_queenside = false;
+    }
+    pub fn cannot_castle_black_kingside(&mut self) {
+        self.can_castle_black_kingside = false;
+    }
+    pub fn cannot_castle_black_queenside(&mut self) {
+        self.can_castle_black_queenside = false;
+    }
 }
 
 impl ops::Index<Position> for Board {
