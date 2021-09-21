@@ -56,29 +56,29 @@ impl Board {
     pub fn set_en_passant_square(&mut self, eps: Option<Position>) {
         self.en_passant_square = eps;
     }
-    pub fn can_castle_white_kingside(&self) -> bool {
-        self.can_castle_white_kingside
+    pub fn can_castle_kingside(&self, color: Color) -> bool {
+        match color {
+            Color::White => self.can_castle_white_kingside,
+            Color::Black => self.can_castle_black_kingside,
+        }
     }
-    pub fn can_castle_white_queenside(&self) -> bool {
-        self.can_castle_white_queenside
+    pub fn can_castle_queenside(&self, color: Color) -> bool {
+        match color {
+            Color::White => self.can_castle_white_queenside,
+            Color::Black => self.can_castle_black_queenside,
+        }
     }
-    pub fn can_castle_black_kingside(&self) -> bool {
-        self.can_castle_black_kingside
+    pub fn cannot_castle_kingside(&mut self, color: Color) {
+        match color {
+            Color::White => self.can_castle_white_kingside = false,
+            Color::Black => self.can_castle_black_kingside = false,
+        }
     }
-    pub fn can_castle_black_queenside(&self) -> bool {
-        self.can_castle_black_queenside
-    }
-    pub fn cannot_castle_white_kingside(&mut self) {
-        self.can_castle_white_kingside = false;
-    }
-    pub fn cannot_castle_white_queenside(&mut self) {
-        self.can_castle_white_queenside = false;
-    }
-    pub fn cannot_castle_black_kingside(&mut self) {
-        self.can_castle_black_kingside = false;
-    }
-    pub fn cannot_castle_black_queenside(&mut self) {
-        self.can_castle_black_queenside = false;
+    pub fn cannot_castle_queenside(&mut self, color: Color) {
+        match color {
+            Color::White => self.can_castle_white_queenside = false,
+            Color::Black => self.can_castle_black_queenside = false,
+        }
     }
 }
 

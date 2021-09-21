@@ -1,4 +1,4 @@
-use crate::{error, piece, Board, Color, Error, Move, Piece, Position};
+use crate::{error, piece, Board, Error, Move, Piece, Position};
 
 pub struct Game {
     board: Board,
@@ -57,19 +57,13 @@ impl Game {
         }
 
         // Handle castling marking
-        match (piece.kind, current_color, move_.from.file()) {
-            (piece::Kind::King, Color::White, _) => {
-                self.board.cannot_castle_white_kingside();
-                self.board.cannot_castle_white_queenside();
+        match (piece.kind, move_.from.file()) {
+            (piece::Kind::King, _) => {
+                self.board.cannot_castle_kingside(current_color);
+                self.board.cannot_castle_queenside(current_color);
             }
-            (piece::Kind::Rook, Color::White, 0) => self.board.cannot_castle_white_queenside(),
-            (piece::Kind::Rook, Color::White, 7) => self.board.cannot_castle_white_kingside(),
-            (piece::Kind::King, Color::Black, _) => {
-                self.board.cannot_castle_black_kingside();
-                self.board.cannot_castle_black_queenside();
-            }
-            (piece::Kind::Rook, Color::Black, 0) => self.board.cannot_castle_black_queenside(),
-            (piece::Kind::Rook, Color::Black, 7) => self.board.cannot_castle_black_kingside(),
+            (piece::Kind::Rook, 0) => self.board.cannot_castle_queenside(current_color),
+            (piece::Kind::Rook, 7) => self.board.cannot_castle_kingside(current_color),
             _ => {}
         }
 
