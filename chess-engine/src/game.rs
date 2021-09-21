@@ -49,9 +49,10 @@ impl Game {
         // Handle castling
         let delta_file = move_.to.file() as i8 - move_.from.file() as i8;
         if piece.kind == piece::Kind::King && delta_file.abs() == 2 {
-            let rook_pos = Position::new(if delta_file > 0 { 7 } else { 0 }, move_.to.rank());
+            let rook_pos =
+                Position::new_unchecked(if delta_file > 0 { 7 } else { 0 }, move_.to.rank());
             let rook_dst_file = move_.to.file() as i8 + -delta_file / 2;
-            let rook_dst = Position::new(rook_dst_file as u8, move_.to.rank());
+            let rook_dst = Position::new_unchecked(rook_dst_file as u8, move_.to.rank());
             self.board[rook_dst] = self.board[rook_pos].take();
         }
 
