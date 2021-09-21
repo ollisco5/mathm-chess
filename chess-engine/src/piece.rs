@@ -26,18 +26,18 @@ impl Piece {
         use Color::*;
         use Kind::*;
         match (self.color, self.kind) {
-            (Black, Pawn) => '♟',
-            (White, Pawn) => '♙',
-            (Black, Rook) => '♜',
-            (White, Rook) => '♖',
-            (Black, Knight) => '♞',
-            (White, Knight) => '♘',
-            (Black, Bishop) => '♝',
-            (White, Bishop) => '♗',
-            (Black, Queen) => '♛',
-            (White, Queen) => '♕',
-            (Black, King) => '♚',
-            (White, King) => '♔',
+            (White, Pawn) => '♟',
+            (Black, Pawn) => '♙',
+            (White, Rook) => '♜',
+            (Black, Rook) => '♖',
+            (White, Knight) => '♞',
+            (Black, Knight) => '♘',
+            (White, Bishop) => '♝',
+            (Black, Bishop) => '♗',
+            (White, Queen) => '♛',
+            (Black, Queen) => '♕',
+            (White, King) => '♚',
+            (Black, King) => '♔',
         }
     }
     pub fn from_name(name: char) -> Result<Self, Error> {
