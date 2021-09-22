@@ -88,4 +88,14 @@ impl Kind {
             _ => Err(Error::ParsingError),
         }
     }
+    pub fn name(&self) -> char {
+        match *self {
+            Self::Pawn => 'P',
+            Self::Rook => 'R',
+            Self::Bishop => 'B',
+            Self::Knight => 'N',
+            Self::Queen => 'Q',
+            Self::King => 'K',
+        }
+    }
 }

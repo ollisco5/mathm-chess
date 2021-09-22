@@ -1,6 +1,6 @@
 use std::{fmt, str::FromStr};
 
-use crate::Error;
+use crate::{piece, Board, Error};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Move {
@@ -15,6 +15,9 @@ impl From<(Position, Position)> for Move {
 }
 
 impl Move {
+    /// Returns the move represented by `s` in arabic notation, e.g. "a4c6".
+    ///
+    /// If `s` is not valid arabic notation, `Err(Error::ParsingError)` is returned.
     pub fn arabic(s: &str) -> Result<Self, Error> {
         match s.len() {
             4 => Ok(Self {
@@ -26,8 +29,67 @@ impl Move {
             _ => unreachable!(),
         }
     }
+    /// Returns the move as a string in arabic notation, e.g. "h8a1"
     pub fn as_arabic(&self) -> String {
         format!("{}{}", self.from, self.to)
+    }
+    /// Returns the move as a string in algebraic notation, e.g. "Qh4xe1"
+    /// `board` must be the state of the board *before* the move is made.
+    ///
+    /// For moves that lead to pawn promotions, `promotion` must be set to the
+    /// kind of piece the pawn was turned in to. If not, None will be returned.
+    /// For all other moves, it is not used and should be set to None.
+    ///
+    /// If no piece exists on the `move`'s `from` tile, None is returned.
+    pub fn as_algebraic(&self, board: &Board, promotion: Option<piece::Kind>) -> Option<String> {
+        let piece = board[self.from]?;
+
+        if piece.kind == piece::Kind::King && self.to.file() == self.from.file() + 2 {
+            // Kingside castling
+            return Some("0-0".to_owned());
+        } else if piece.kind == piece::Kind::King && self.to.file() == self.to.file() - 2 {
+            // Queenside castling
+            return Some("0-0-0".to_owned());
+        }
+
+        let kind_part = if piece.kind == piece::Kind::Pawn {
+            "".to_owned()
+        } else {
+            piece.kind.name().to_string()
+        };
+        let from_file_part = if (0..8u8)
+            .map(|rank| Position::new_unchecked(self.from.file(), rank))
+            .map(|pos| board[pos] == Some(piece))
+            .any(|b| b)
+        {
+            ((self.from.file() + b'a') as char).to_string()
+        } else {
+            "".to_owned()
+        };
+        let from_rank_part = if (0..8u8)
+            .map(|file| Position::new_unchecked(file, self.from.rank()))
+            .map(|pos| board[pos] == Some(piece))
+            .any(|b| b)
+        {
+            ((self.from.rank() + b'1') as char).to_string()
+        } else {
+            "".to_owned()
+        };
+        let capture_part = if board[self.to].is_some() { "x" } else { "" };
+        let dest_part = self.to;
+        let promotion_part = promotion.map_or("".to_owned(), |kind| kind.name().to_string());
+        let check_part = "".to_owned(); // TODO: check for check (+) and checkmate (#)
+
+        Some(format!(
+            "{kind}{from_file}{from_rank}{capture}{destination}{promotion}{check}",
+            kind = kind_part,
+            from_file = from_file_part,
+            from_rank = from_rank_part,
+            capture = capture_part,
+            destination = dest_part,
+            promotion = promotion_part,
+            check = check_part,
+        ))
     }
 }
 
