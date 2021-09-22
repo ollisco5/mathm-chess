@@ -38,6 +38,7 @@ impl Game {
         let move_: Move = move_.into();
         let piece = self.board[move_.from].unwrap();
         let current_color = self.board.next_to_move();
+        let mut captured = self.board[move_.to];
 
         self.board[move_.to] = self.board[move_.from].take();
 
@@ -71,7 +72,7 @@ impl Game {
         if piece.kind == piece::Kind::Pawn && Some(move_.to) == self.board.en_passant_square() {
             let target_rank = move_.to.rank() as i8 + current_color.backwards();
             let target = Position::new_unchecked(move_.to.file(), target_rank as u8);
-            self.board[target] = None;
+            captured = self.board[target].take();
         }
 
         // Handle en passant marking
@@ -88,6 +89,9 @@ impl Game {
         }
 
         self.board.switch_next_to_move();
+        if captured.is_some() || piece.kind == piece::Kind::Pawn {
+            self.board.reset_halvmove_counter();
+        }
 
         Ok(())
     }

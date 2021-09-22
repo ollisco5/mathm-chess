@@ -26,8 +26,8 @@ impl Board {
     pub fn next_to_move(&self) -> Color {
         self.next_to_move
     }
-    /// Sets `next_to_move` to the other color and adds to move_number if
-    /// `next_to_move` was black before call
+    /// Sets `next_to_move` to the other color and increments `move_number` and
+    /// `halfmove_counter` if `next_to_move` was black before call
     pub fn switch_next_to_move(&mut self) {
         if self.next_to_move() == Color::Black {
             self.move_number += 1;
@@ -69,6 +69,10 @@ impl Board {
             Color::White => self.can_castle_white_queenside = false,
             Color::Black => self.can_castle_black_queenside = false,
         }
+    }
+    /// Sets the halvmove counter to zero
+    pub fn reset_halvmove_counter(&mut self) {
+        self.halfmove_counter = 0;
     }
 }
 
