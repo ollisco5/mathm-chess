@@ -100,7 +100,7 @@ pub enum Color {
 }
 
 impl Color {
-    pub fn other(&mut self) -> Color {
+    pub fn other(&self) -> Color {
         match self {
             Self::White => Self::Black,
             Self::Black => Self::White,

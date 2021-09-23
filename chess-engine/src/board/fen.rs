@@ -40,6 +40,7 @@ impl Board {
             en_passant_square: None,
             halfmove_counter: 0,
             move_number: 0,
+            checking_pieces: 0,
         };
 
         let next_to_move_part = fen.next().ok_or(Error::ParsingError)?;
@@ -76,6 +77,9 @@ impl Board {
 
         let move_number_part = fen.next().ok_or(Error::ParsingError)?;
         board.move_number = move_number_part.parse().map_err(|_| Error::ParsingError)?;
+
+        // TODO: Check if player is in check
+        // TODO: Return error if game state is invalid
 
         Ok(board)
     }

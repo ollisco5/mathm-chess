@@ -1,9 +1,13 @@
 use std::{fmt, ops};
 
-use crate::{Color, Piece, Position};
+use crate::{piece, Color, Piece, Position};
 
 mod fen;
 
+/// Represents the state of a chess board.
+///
+/// Note: the `Board` must always represent a valid state. Some methods might
+/// panic if the is not the case.
 #[derive(Debug, PartialEq, Eq)]
 pub struct Board {
     pub(crate) tiles: [[Option<Piece>; 8]; 8],
@@ -15,6 +19,7 @@ pub struct Board {
     pub(crate) en_passant_square: Option<Position>,
     pub(crate) halfmove_counter: u16,
     pub(crate) move_number: u16,
+    pub(crate) checking_pieces: u8,
 }
 
 impl Board {
@@ -73,6 +78,29 @@ impl Board {
     /// Sets the halvmove counter to zero
     pub fn reset_halvmove_counter(&mut self) {
         self.halfmove_counter = 0;
+    }
+    pub fn in_check(&self) -> bool {
+        self.checking_pieces > 0
+    }
+    pub fn in_double_check(&self) -> bool {
+        self.checking_pieces > 1
+    }
+    /// Returns the position of the king with the color `color`.
+    pub fn get_king_position(&self, color: Color) -> Position {
+        let mut pos = Position::new_unchecked(0, 0);
+        while self[pos]
+            != Some(Piece {
+                color,
+                kind: piece::Kind::King,
+            })
+        {
+            if pos.file() == 7 {
+                pos = Position::new_unchecked(0, pos.rank() + 1)
+            } else {
+                pos = Position::new_unchecked(pos.file() + 1, pos.rank())
+            }
+        }
+        pos
     }
 }
 

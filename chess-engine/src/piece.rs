@@ -56,7 +56,21 @@ impl Piece {
             kind: Kind::from_name(name)?,
         })
     }
+    /// Returns whether the piece at `move_.from` legally can move to
+    /// `move_.to`.
     pub fn can_move(&self, move_: Move, board: &Board) -> bool {
+        // if in check:
+        //     if only one piece is checking king:
+        //         either:
+        //             must capture checker
+        //         or:
+        //             must place oneself in the way
+        //     else:
+        //         must move king
+        //
+        // else:
+        //     avoid revealed checks
+
         self.get_moves(board, move_.from).contains(&move_.to)
     }
     pub fn get_moves(&self, board: &Board, from: Position) -> Vec<Position> {
@@ -65,6 +79,11 @@ impl Piece {
         ret
     }
     pub fn append_moves(&self, board: &Board, from: Position, dst: &mut Vec<Position>) {
+        if board.in_double_check() {
+            if self.kind != Kind::King {
+                return;
+            }
+        }
         match self.kind {
             Kind::Pawn => pawn::append_moves(board, from, dst),
             Kind::Rook => rook::append_moves(board, from, dst),
@@ -72,6 +91,16 @@ impl Piece {
             Kind::Bishop => bishop::append_moves(board, from, dst),
             Kind::Queen => queen::append_moves(board, from, dst),
             Kind::King => king::append_moves(board, from, dst),
+        }
+    }
+    pub fn checks(&self, at: Position, board: &Board) -> bool {
+        match self.kind {
+            Kind::Pawn => pawn::checks(at, self.color, board),
+            Kind::Rook => rook::checks(at, self.color, board),
+            Kind::Knight => knight::checks(at, self.color, board),
+            Kind::Bishop => bishop::checks(at, self.color, board),
+            Kind::Queen => queen::checks(at, self.color, board),
+            Kind::King => king::checks(at, self.color, board),
         }
     }
 }

@@ -1,4 +1,8 @@
-use crate::{Board, Position};
+use crate::{Board, Color, Position};
+
+pub fn checks(_at: Position, _color: Color, _board: &Board) -> bool {
+    false
+}
 
 pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
     let color = board[from].unwrap().color;
@@ -22,6 +26,8 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
         if target_color == Some(color) {
             continue;
         }
+
+        // todo: check check
 
         dst.push(pos);
     }
