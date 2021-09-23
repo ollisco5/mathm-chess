@@ -1,7 +1,13 @@
-use crate::{error, piece, Board, Error, Move, Piece, Position};
+use crate::{error, piece, Board, Color, Error, Move, Piece, Position};
 
 pub struct Game {
     board: Board,
+}
+
+pub enum GameState {
+    Ongoing,
+    Checkmate { winner: Color },
+    Draw,
 }
 
 impl Game {
@@ -11,7 +17,7 @@ impl Game {
     pub fn board(&self) -> &Board {
         &self.board
     }
-    pub fn make_move<M, P>(&mut self, move_: M, pawn_promotion: P) -> Result<(), Error>
+    pub fn make_move<M, P>(&mut self, move_: M, pawn_promotion: P) -> Result<GameState, Error>
     where
         M: Into<Move>,
         P: FnOnce() -> piece::Kind,
@@ -34,7 +40,7 @@ impl Game {
     /// can move to `move_.to` legally.
     ///
     /// `checks` signifies whether the opponent will be in check after the move.
-    fn make_move_unchecked<M, P>(&mut self, move_: M, pawn_promotion: P) -> Result<(), Error>
+    fn make_move_unchecked<M, P>(&mut self, move_: M, pawn_promotion: P) -> Result<GameState, Error>
     where
         M: Into<Move>,
         P: FnOnce() -> piece::Kind,
@@ -109,6 +115,35 @@ impl Game {
             self.board.reset_halvmove_counter();
         }
 
-        Ok(())
+        let mut moves = vec![];
+        for rank in 0..8 {
+            for file in 0..8 {
+                let pos = Position::new_unchecked(file, rank);
+                if let Some(piece) = self.board[pos] {
+                    if piece.color == self.board.next_to_move() {
+                        piece.append_moves(&self.board, pos, &mut moves);
+                    }
+                }
+            }
+        }
+        if moves.len() == 0 {
+            if piece::util::threatened_at(
+                self.board.get_king_position(self.board.next_to_move()),
+                &[],
+                &[],
+                self.board.next_to_move(),
+                &self.board,
+            ) {
+                Ok(GameState::Checkmate {
+                    winner: self.board.next_to_move().other(),
+                })
+            } else {
+                Ok(GameState::Draw)
+            }
+        } else if self.board.halfmove_counter == 50 {
+            Ok(GameState::Draw)
+        } else {
+            Ok(GameState::Ongoing)
+        }
     }
 }

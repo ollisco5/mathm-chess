@@ -6,7 +6,7 @@ mod knight;
 mod pawn;
 mod queen;
 mod rook;
-mod util;
+pub mod util;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Piece {

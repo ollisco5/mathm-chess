@@ -1,4 +1,4 @@
-use chess_engine::{piece, Board, Game, Move, Position};
+use chess_engine::{piece, Board, Game, GameState, Move, Position};
 use std::{io::BufRead, str::FromStr};
 
 fn main() {
@@ -46,7 +46,15 @@ fn main() {
                 }
             };
         }) {
-            Ok(()) => (),
+            Ok(GameState::Ongoing) => (),
+            Ok(GameState::Draw) => {
+                println!("Draw!");
+                return;
+            }
+            Ok(GameState::Checkmate { winner }) => {
+                println!("Checkmate! {:?} wins", winner);
+                return;
+            }
             Err(err) => {
                 println!("{}", err);
                 continue;

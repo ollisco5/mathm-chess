@@ -8,7 +8,7 @@ mod util;
 
 pub use board::Board;
 pub use error::Error;
-pub use game::Game;
+pub use game::{Game, GameState};
 pub use piece::Piece;
 pub use util::{Color, Move, Position};
 
