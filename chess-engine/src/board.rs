@@ -8,7 +8,7 @@ mod fen;
 ///
 /// Note: the `Board` must always represent a valid state. Some methods might
 /// panic if the is not the case.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Board {
     pub(crate) tiles: [[Option<Piece>; 8]; 8],
     pub(crate) next_to_move: Color,
@@ -30,9 +30,11 @@ impl Board {
     pub fn next_to_move(&self) -> Color {
         self.next_to_move
     }
-    /// Sets `next_to_move` to the other color and increments `move_number` and
-    /// `halfmove_counter` if `next_to_move` was black before call
+    /// Sets `next_to_move` to the other color and increments `move_number` if
+    /// `next_to_move` was black before call. Also increments
+    /// `halfmove_counter`
     pub fn switch_next_to_move(&mut self) {
+        self.halfmove_counter += 1;
         if self.next_to_move() == Color::Black {
             self.move_number += 1;
         }
@@ -75,7 +77,7 @@ impl Board {
         }
     }
     /// Sets the halvmove counter to zero
-    pub fn reset_halvmove_counter(&mut self) {
+    pub fn reset_halfmove_counter(&mut self) {
         self.halfmove_counter = 0;
     }
     /// Returns the position of the king with the color `color`.

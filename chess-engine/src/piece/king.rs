@@ -34,6 +34,10 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
         dst.push(pos);
     }
 
+    if board.can_castle_queenside(color) {
+        assert_eq!(from.file(), 4);
+    }
+
     if board.can_castle_queenside(color)
         && board[Position::new_unchecked(from.file() - 3, from.rank())].is_none()
         && !threatened_at(from, &[], &[], color, board)

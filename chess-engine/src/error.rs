@@ -8,7 +8,18 @@ pub enum Error {
     IllegalMove,
     UnknwonPiece(char),
     ParsingError,
+    FenError(FenError),
     InvalidGameState,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum FenError {
+    Pieces,
+    NextToMove,
+    Castling,
+    EnPassant,
+    HalfmoveCounter,
+    MoveNumber,
 }
 
 impl StdError for Error {
@@ -25,7 +36,21 @@ impl fmt::Display for Error {
             Self::IllegalMove => write!(f, "Illegal move"),
             Self::UnknwonPiece(c) => write!(f, "Unknown piece {}", c),
             Self::ParsingError => write!(f, "Parsing error"),
+            Self::FenError(err) => write!(f, "Fen parsing error at {} part", err),
             Self::InvalidGameState => write!(f, "Invalid game state"),
+        }
+    }
+}
+
+impl fmt::Display for FenError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Pieces => write!(f, "pieces"),
+            Self::NextToMove => write!(f, "next to move"),
+            Self::Castling => write!(f, "castling"),
+            Self::EnPassant => write!(f, "en passant"),
+            Self::HalfmoveCounter => write!(f, "halfmove counter"),
+            Self::MoveNumber => write!(f, "move number"),
         }
     }
 }

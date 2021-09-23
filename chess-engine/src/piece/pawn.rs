@@ -32,7 +32,9 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
 
     if from.rank() == 6 && color == Color::White || from.rank() == 1 && color == Color::Black {
         if let Some(pos) = Position::new(from.file(), (from.rank() as i8 + forwards * 2) as u8) {
-            if board[pos].is_none()
+            if board[Position::new_i8_unchecked(from.file() as i8, from.rank() as i8 + forwards)]
+                .is_none()
+                && board[pos].is_none()
                 && !threatened_at(
                     board.get_king_position(color),
                     &[from],

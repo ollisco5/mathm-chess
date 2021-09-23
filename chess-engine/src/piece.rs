@@ -56,6 +56,13 @@ impl Piece {
             kind: Kind::from_name(name)?,
         })
     }
+    pub fn name(&self) -> char {
+        if self.color == Color::Black {
+            self.kind.name().to_ascii_lowercase()
+        } else {
+            self.kind.name()
+        }
+    }
     /// Returns whether the piece at `move_.from` legally can move to
     /// `move_.to`.
     pub fn can_move(&self, move_: Move, board: &Board) -> bool {

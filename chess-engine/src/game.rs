@@ -1,9 +1,11 @@
 use crate::{piece, Board, Color, Error, Move, Piece, Position};
 
+#[derive(Debug, Clone)]
 pub struct Game {
     board: Board,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GameState {
     Ongoing,
     Checkmate { winner: Color },
@@ -100,7 +102,7 @@ impl Game {
 
         self.board.switch_next_to_move();
         if captured.is_some() || piece.kind == piece::Kind::Pawn {
-            self.board.reset_halvmove_counter();
+            self.board.reset_halfmove_counter();
         }
 
         let mut moves = vec![];
