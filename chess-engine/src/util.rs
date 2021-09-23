@@ -33,6 +33,9 @@ impl Move {
     pub fn as_arabic(&self) -> String {
         format!("{}{}", self.from, self.to)
     }
+    /// # Note
+    /// Doesn't work
+    /// # If it worked:
     /// Returns the move as a string in algebraic notation, e.g. "Qh4xe1"
     /// `board` must be the state of the board *before* the move is made.
     ///
@@ -71,14 +74,18 @@ impl Move {
             .map(|pos| board[pos] == Some(piece))
             .any(|b| b)
         {
-            ((self.from.rank() + b'1') as char).to_string()
+            ((b'8' - self.from.rank()) as char).to_string()
         } else {
             "".to_owned()
         };
         let capture_part = if board[self.to].is_some() { "x" } else { "" };
         let dest_part = self.to;
         let promotion_part = promotion.map_or("".to_owned(), |kind| kind.name().to_string());
-        let check_part = "".to_owned(); // TODO: check for check (+) and checkmate (#)
+        let check_part = if piece.checks(self.to, board) {
+            "+"
+        } else {
+            ""
+        };
 
         Some(format!(
             "{kind}{from_file}{from_rank}{capture}{destination}{promotion}{check}",
