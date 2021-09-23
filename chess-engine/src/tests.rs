@@ -139,7 +139,6 @@ fn default_board() {
             en_passant_square: None,
             halfmove_counter: 0,
             move_number: 1,
-            checking_pieces: 0,
         }
     );
 }

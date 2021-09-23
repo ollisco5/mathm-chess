@@ -79,11 +79,6 @@ impl Piece {
         ret
     }
     pub fn append_moves(&self, board: &Board, from: Position, dst: &mut Vec<Position>) {
-        if board.in_double_check() {
-            if self.kind != Kind::King {
-                return;
-            }
-        }
         match self.kind {
             Kind::Pawn => pawn::append_moves(board, from, dst),
             Kind::Rook => rook::append_moves(board, from, dst),

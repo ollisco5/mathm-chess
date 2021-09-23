@@ -51,18 +51,10 @@ impl Game {
 
         self.board[move_.to] = self.board[move_.from].take();
 
-        self.board.checking_pieces = 0;
-        if piece.checks(move_.to, &self.board) {
-            self.board.checking_pieces += 1;
-        }
-
         // Handle promotion
         if piece.kind == piece::Kind::Pawn && (move_.to.rank() == 7 || move_.to.rank() == 0) {
             let promoted = Piece::new(current_color, pawn_promotion());
             self.board[move_.to] = Some(promoted);
-            if promoted.checks(move_.to, &self.board) {
-                self.board.checking_pieces += 1;
-            }
         }
 
         // Handle castling
@@ -73,9 +65,6 @@ impl Game {
             let rook_dst_file = move_.to.file() as i8 + -delta_file / 2;
             let rook_dst = Position::new_unchecked(rook_dst_file as u8, move_.to.rank());
             self.board[rook_dst] = self.board[rook_pos].take();
-            if self.board[rook_dst].unwrap().checks(rook_dst, &self.board) {
-                self.board.checking_pieces += 1;
-            }
         }
 
         // Handle castling marking

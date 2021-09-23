@@ -19,7 +19,6 @@ pub struct Board {
     pub(crate) en_passant_square: Option<Position>,
     pub(crate) halfmove_counter: u16,
     pub(crate) move_number: u16,
-    pub(crate) checking_pieces: u8,
 }
 
 impl Board {
@@ -78,12 +77,6 @@ impl Board {
     /// Sets the halvmove counter to zero
     pub fn reset_halvmove_counter(&mut self) {
         self.halfmove_counter = 0;
-    }
-    pub fn in_check(&self) -> bool {
-        self.checking_pieces > 0
-    }
-    pub fn in_double_check(&self) -> bool {
-        self.checking_pieces > 1
     }
     /// Returns the position of the king with the color `color`.
     pub fn get_king_position(&self, color: Color) -> Position {
