@@ -1,12 +1,15 @@
 use std::str::FromStr;
 
-use crate::{Color, Error, Piece, Position};
+use crate::{piece, Color, Error, Piece, Position};
 
 use super::Board;
 
 impl Board {
     pub fn from_fen(fen: &str) -> Result<Self, Error> {
         let mut fen = fen.split_ascii_whitespace();
+
+        let mut found_white_king = false;
+        let mut found_black_king = false;
 
         let mut tiles = [[None; 8]; 8];
 
@@ -24,7 +27,14 @@ impl Board {
                     file += c as usize - '0' as usize;
                 }
                 _ => {
-                    tiles[rank][file] = Some(Piece::from_name(c)?);
+                    let piece = Piece::from_name(c)?;
+                    if piece.kind == piece::Kind::King {
+                        *match piece.color {
+                            Color::White => &mut found_white_king,
+                            Color::Black => &mut found_black_king,
+                        } = true;
+                    }
+                    tiles[rank][file] = Some(piece);
                     file += 1;
                 }
             }
@@ -40,7 +50,6 @@ impl Board {
             en_passant_square: None,
             halfmove_counter: 0,
             move_number: 0,
-            checking_pieces: 0,
         };
 
         let next_to_move_part = fen.next().ok_or(Error::ParsingError)?;
@@ -78,8 +87,10 @@ impl Board {
         let move_number_part = fen.next().ok_or(Error::ParsingError)?;
         board.move_number = move_number_part.parse().map_err(|_| Error::ParsingError)?;
 
-        // TODO: Check if player is in check
         // TODO: Return error if game state is invalid
+        if !found_white_king || !found_black_king {
+            return Err(Error::InvalidGameState);
+        }
 
         Ok(board)
     }

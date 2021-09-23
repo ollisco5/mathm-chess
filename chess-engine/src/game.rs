@@ -1,4 +1,4 @@
-use crate::{error, piece, Board, Color, Error, Move, Piece, Position};
+use crate::{piece, Board, Color, Error, Move, Piece, Position};
 
 pub struct Game {
     board: Board,
@@ -25,14 +25,13 @@ impl Game {
         let move_ = move_.into();
         if let Some(piece) = self.board[move_.from] {
             if piece.color != self.board.next_to_move() {
-                return Err(Error::IllegalMove(error::IllegalMove::OtherPlayersTurn));
+                return Err(Error::OtherPlayersTurn);
             }
             if !piece.can_move(move_, &self.board) {
-                return Err(Error::IllegalMove(error::IllegalMove::DisallowedMovement));
-                // TODO: what about `error::IllegalMove::WouldPutSelfInCheck`?
+                return Err(Error::IllegalMove);
             }
         } else {
-            return Err(Error::IllegalMove(error::IllegalMove::NoPieceToMove));
+            return Err(Error::NoPieceToMove);
         }
         self.make_move_unchecked(move_, pawn_promotion)
     }

@@ -3,17 +3,12 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Error {
-    IllegalMove(IllegalMove),
-    UnknwonPiece(char),
-    ParsingError,
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum IllegalMove {
     OtherPlayersTurn,
     NoPieceToMove,
-    WouldPutSelfInCheck,
-    DisallowedMovement,
+    IllegalMove,
+    UnknwonPiece(char),
+    ParsingError,
+    InvalidGameState,
 }
 
 impl StdError for Error {
@@ -25,20 +20,12 @@ impl StdError for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::IllegalMove(i) => write!(f, "Illegal move, {}", i),
+            Self::OtherPlayersTurn => write!(f, "Other players turn"),
+            Self::NoPieceToMove => write!(f, "No piece to move"),
+            Self::IllegalMove => write!(f, "Illegal move"),
             Self::UnknwonPiece(c) => write!(f, "Unknown piece {}", c),
             Self::ParsingError => write!(f, "Parsing error"),
-        }
-    }
-}
-
-impl fmt::Display for IllegalMove {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::OtherPlayersTurn => write!(f, "other players turn"),
-            Self::NoPieceToMove => write!(f, "no piece to move"),
-            Self::WouldPutSelfInCheck => write!(f, "would put own king in check"),
-            Self::DisallowedMovement => write!(f, "disallowed movement"),
+            Self::InvalidGameState => write!(f, "Invalid game state"),
         }
     }
 }
