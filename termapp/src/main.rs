@@ -1,5 +1,5 @@
-use chess_engine::{piece, Board, Game, Move};
-use std::io::BufRead;
+use chess_engine::{piece, Board, Game, Move, Position};
+use std::{io::BufRead, str::FromStr};
 
 fn main() {
     let mut game = Game::new(Board::default());
@@ -7,6 +7,28 @@ fn main() {
     let stdin = std::io::stdin();
     let mut lines = stdin.lock().lines().map(|line| line.unwrap());
     while let Some(line) = lines.next() {
+        let line = line.trim();
+        if line.len() == 2 {
+            let pos = match Position::from_str(line) {
+                Ok(pos) => pos,
+                Err(err) => {
+                    println!("{}", err);
+                    continue;
+                }
+            };
+            match game.board()[pos] {
+                Some(piece) => println!(
+                    "{}",
+                    piece
+                        .get_moves(game.board(), pos)
+                        .iter()
+                        .fold(String::new(), |acc, p| format!("{} {}", acc, p))
+                ),
+                None => {}
+            }
+            continue;
+        }
+
         let m = match Move::arabic(line.trim()) {
             Ok(m) => m,
             Err(err) => {

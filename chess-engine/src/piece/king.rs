@@ -18,18 +18,16 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
         (0, 1),
         (1, 1),
     ] {
-        let pos = match Position::new_i8(from.file() as i8 + x, from.rank() as i8 * y) {
+        let pos = match Position::new_i8(from.file() as i8 + x, from.rank() as i8 + y) {
             Some(pos) => pos,
             None => continue,
         };
 
-        let target_color = board[pos].map(|p| p.color);
-
-        if target_color == Some(color) {
+        if board[pos].map(|p| p.color) == Some(color) {
             continue;
         }
 
-        if threatened_at(pos, Some(from), color, board) {
+        if threatened_at(pos, &[from], &[], color, board) {
             continue;
         }
 
@@ -37,35 +35,22 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
     }
 
     if board.can_castle_queenside(color)
-        && !threatened_at(
-            Position::new_unchecked(from.file() - 1, from.rank()),
-            None,
-            color,
-            board,
-        )
-        && !threatened_at(
-            Position::new_unchecked(from.file() - 2, from.rank()),
-            None,
-            color,
-            board,
-        )
+        && board[Position::new_unchecked(from.file() - 3, from.rank())].is_none()
+        && !threatened_at(from, &[], &[], color, board)
+        && [1, 2]
+            .iter()
+            .map(|x| Position::new_unchecked(from.file() - x, from.rank()))
+            .all(|pos| board[pos].is_none() && !threatened_at(pos, &[], &[], color, board))
     {
         dst.push(Position::new_unchecked(from.file() - 2, from.rank()))
     }
 
     if board.can_castle_kingside(color)
-        && !threatened_at(
-            Position::new_unchecked(from.file() + 1, from.rank()),
-            None,
-            color,
-            board,
-        )
-        && !threatened_at(
-            Position::new_unchecked(from.file() + 2, from.rank()),
-            None,
-            color,
-            board,
-        )
+        && !threatened_at(from, &[], &[], color, board)
+        && [1, 2]
+            .iter()
+            .map(|x| Position::new_unchecked(from.file() + x, from.rank()))
+            .all(|pos| board[pos].is_none() && !threatened_at(pos, &[], &[], color, board))
     {
         dst.push(Position::new_unchecked(from.file() + 2, from.rank()))
     }

@@ -1,6 +1,6 @@
 use crate::{Board, Color, Position};
 
-use super::util::position_hides_check;
+use super::util::threatened_at;
 
 pub fn checks(at: Position, color: Color, board: &Board) -> bool {
     [
@@ -15,32 +15,29 @@ pub fn checks(at: Position, color: Color, board: &Board) -> bool {
 pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
     let color = board[from].unwrap().color;
     let forwards = color.forwards();
-    let was_hiding_check = position_hides_check(board, from, color);
 
-    let mut can_move_forwards = true;
-    let mut can_capture_left = true;
-    let mut can_capture_right = true;
-    if let Some((d, _)) = was_hiding_check {
-        if d.0 != 0 {
-            can_move_forwards = false;
-        }
-        if d != (-1, forwards) {
-            can_capture_left = false;
-        }
-        if d != (1, forwards) {
-            can_capture_right = false;
+    if let Some(pos) = Position::new(from.file(), (from.rank() as i8 + forwards) as u8) {
+        if !threatened_at(
+            board.get_king_position(color),
+            &[from],
+            &[pos],
+            color,
+            board,
+        ) {
+            dst.push(pos);
         }
     }
 
-    if can_move_forwards {
-        if let Some(pos) = Position::new(from.file(), (from.rank() as i8 + forwards) as u8) {
-            dst.push(pos);
-        }
-
-        // en passant
-        if from.rank() == 6 && color == Color::White || from.rank() == 1 && color == Color::Black {
-            if let Some(pos) = Position::new(from.file(), (from.rank() as i8 + forwards * 2) as u8)
-            {
+    // en passant
+    if from.rank() == 6 && color == Color::White || from.rank() == 1 && color == Color::Black {
+        if let Some(pos) = Position::new(from.file(), (from.rank() as i8 + forwards * 2) as u8) {
+            if !threatened_at(
+                board.get_king_position(color),
+                &[from],
+                &[pos],
+                color,
+                board,
+            ) {
                 dst.push(pos);
             }
         }
@@ -49,20 +46,32 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
     // capturing
     // TODO: [e]
     //   q    p P   K
-    if let Some(position) = Position::new_i8(from.file() as i8 - 1, from.rank() as i8 + forwards) {
-        if can_capture_left
-            && (board[position].map(|p| p.color) == Some(color.other())
-                || Some(position) == board.en_passant_square())
-        {
-            dst.push(position);
-        }
-    }
-    if let Some(position) = Position::new_i8(from.file() as i8 + 1, from.rank() as i8 + forwards) {
-        if can_capture_right
-            && (board[position].map(|p| p.color) == Some(color.other())
-                || Some(position) == board.en_passant_square())
-        {
-            dst.push(position);
+    for x in [-1, 1] {
+        if let Some(pos) = Position::new_i8(from.file() as i8 + x, from.rank() as i8 + forwards) {
+            if board[pos].map(|p| p.color) == Some(color.other())
+                && !threatened_at(
+                    board.get_king_position(color),
+                    &[from],
+                    &[pos],
+                    color,
+                    board,
+                )
+            {
+                dst.push(pos);
+            }
+            if Some(pos) == board.en_passant_square() {
+                let pawn_pos =
+                    Position::new_i8_unchecked(pos.file() as i8, pos.rank() as i8 - forwards);
+                if !threatened_at(
+                    board.get_king_position(color),
+                    &[from, pawn_pos],
+                    &[pos],
+                    color,
+                    board,
+                ) {
+                    dst.push(pos);
+                }
+            }
         }
     }
 }

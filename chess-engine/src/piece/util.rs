@@ -3,12 +3,19 @@ use crate::{Board, Color, Position};
 use super::Kind;
 
 /// Indicates if a piece at `position` with color `color` can be captured.
+///
 /// Note: Ignores en passant rules.
+///
 /// If `ignore_piece_at` is `Some`, that square will be treated as empty.
+///
+/// If `treat_pos_as_wall` is `Some`, a capture that require moving over that
+/// square wont count.
+///
 /// Also, the piece in question does not have to be at `position` in `board`.
 pub fn threatened_at(
     position: Position,
-    ignore_piece_at: Option<Position>,
+    treat_as_empty: &[Position],
+    treat_as_occupied: &[Position],
     color: Color,
     board: &Board,
 ) -> bool {
@@ -26,7 +33,7 @@ pub fn threatened_at(
             Some(pos) => pos,
             None => continue,
         };
-        if Some(pos) == ignore_piece_at {
+        if treat_as_empty.contains(&pos) {
             continue;
         }
         if board[pos].map_or(false, |piece| {
@@ -53,8 +60,11 @@ pub fn threatened_at(
                 Some(pos) => pos,
                 None => break,
             };
-            if Some(pos) == ignore_piece_at {
+            if treat_as_empty.contains(&pos) {
                 continue;
+            }
+            if treat_as_occupied.contains(&pos) {
+                break;
             }
             if let Some(piece) = board[pos] {
                 if piece.color == color {
@@ -71,7 +81,7 @@ pub fn threatened_at(
             Some(pos) => pos,
             None => continue,
         };
-        if Some(pos) == ignore_piece_at {
+        if treat_as_empty.contains(&pos) {
             continue;
         }
         if board[pos].map_or(false, |piece| {
@@ -94,7 +104,7 @@ pub fn threatened_at(
             Some(pos) => pos,
             None => continue,
         };
-        if Some(pos) == ignore_piece_at {
+        if treat_as_empty.contains(&pos) {
             continue;
         }
         if board[pos].map_or(false, |piece| {
@@ -168,31 +178,31 @@ pub fn position_hides_check(
     None
 }
 
-/// Indicates if the piece at `pos` is being threatened from `dir` by a piece
-/// (either rook, bishop, or queen) with color `color.other()`
-pub fn threatened_from_dir(
-    board: &Board,
-    color: Color,
-    (dir, mut pos): ((i8, i8), Position),
-) -> bool {
-    for _ in 1..8 {
-        pos = match Position::new_i8(pos.file() as i8 + dir.0, pos.rank() as i8 + dir.1) {
-            Some(p) => p,
-            None => break,
-        };
-        if let Some(piece) = board[pos] {
-            if (piece.kind == Kind::Queen
-                || piece.kind == Kind::Rook && (dir.0 == 0 || dir.1 == 0)
-                || piece.kind == Kind::Bishop && dir.0 != 0 && dir.1 != 0)
-                && piece.color != color
-            {
-                return true;
-            }
-        }
-    }
-
-    false
-}
+// /// Indicates if the piece at `pos` is being threatened from `dir` by a piece
+// /// (either rook, bishop, or queen) with color `color.other()`
+// pub fn threatened_from_dir(
+//     board: &Board,
+//     color: Color,
+//     (dir, mut pos): ((i8, i8), Position),
+// ) -> bool {
+//     for _ in 1..8 {
+//         pos = match Position::new_i8(pos.file() as i8 + dir.0, pos.rank() as i8 + dir.1) {
+//             Some(p) => p,
+//             None => break,
+//         };
+//         if let Some(piece) = board[pos] {
+//             if (piece.kind == Kind::Queen
+//                 || piece.kind == Kind::Rook && (dir.0 == 0 || dir.1 == 0)
+//                 || piece.kind == Kind::Bishop && dir.0 != 0 && dir.1 != 0)
+//                 && piece.color != color
+//             {
+//                 return true;
+//             }
+//         }
+//     }
+//
+//     false
+// }
 
 pub fn floating_checks(deltas: &[(i8, i8)], at: Position, color: Color, board: &Board) -> bool {
     for (x, y) in deltas {

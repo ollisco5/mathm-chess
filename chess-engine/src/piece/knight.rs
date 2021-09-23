@@ -1,6 +1,6 @@
-use crate::{piece::util::threatened_from_dir, Board, Color, Piece, Position};
+use crate::{Board, Color, Position};
 
-use super::util::position_hides_check;
+use super::util::threatened_at;
 
 pub fn checks(at: Position, color: Color, board: &Board) -> bool {
     let king_pos = board.get_king_position(color.other());
@@ -12,7 +12,6 @@ pub fn checks(at: Position, color: Color, board: &Board) -> bool {
 
 pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
     let color = board[from].unwrap().color;
-    let was_hiding_check = position_hides_check(board, from, color);
     dst.extend(
         [
             (2, -1),
@@ -28,11 +27,14 @@ pub fn append_moves(board: &Board, from: Position, dst: &mut Vec<Position>) {
         .map(|(file, rank)| Position::new_i8(from.file() as i8 + file, from.rank() as i8 + rank))
         .flatten()
         .filter(|&pos| {
-            (match board[pos] {
-                Some(Piece { color: c, .. }) if c == color => false,
-                _ => true,
-            } && (was_hiding_check.is_none()
-                || threatened_from_dir(board, color, was_hiding_check.unwrap())))
+            board[pos].map(|piece| piece.color) != Some(color)
+                && !threatened_at(
+                    board.get_king_position(color),
+                    &[from],
+                    &[pos],
+                    color,
+                    board,
+                )
         }),
     )
 }
