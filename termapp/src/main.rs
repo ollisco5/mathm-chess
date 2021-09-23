@@ -1,11 +1,21 @@
-use chess_engine::{piece, Board, Game, GameState, Move, Position};
+use chess_engine::{piece, Board, Decider, Game, GameState, Move, Position};
 use std::{io::BufRead, str::FromStr};
 
+struct D;
+
+impl Decider for D {
+    fn get_move(&mut self, board: &Board) -> Move {
+        unimplemented!()
+    }
+    fn get_pawn_promotion(&mut self) -> piece::Kind {
+        unimplemented!()
+    }
+}
+
 fn main() {
-    let mut game = Game::new(
-        Board::from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1")
-            .unwrap(),
-    );
+    D.run(Board::default()).unwrap();
+
+    let mut game = Game::new(Board::default());
     print!("{}", game.board().to_string());
     let stdin = std::io::stdin();
     let mut lines = stdin.lock().lines().map(|line| line.unwrap());
