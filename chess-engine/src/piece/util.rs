@@ -2,6 +2,110 @@ use crate::{Board, Color, Position};
 
 use super::Kind;
 
+/// Indicates if a piece at `position` with color `color` can be captured.
+/// Note: Ignores en passant rules.
+/// If `ignore_piece_at` is `Some`, that square will be treated as empty.
+/// Also, the piece in question does not have to be at `position` in `board`.
+pub fn threatened_at(
+    position: Position,
+    ignore_piece_at: Option<Position>,
+    color: Color,
+    board: &Board,
+) -> bool {
+    for (x, y) in [
+        (2, -1),
+        (1, -2),
+        (-1, -2),
+        (-2, -1),
+        (-2, 1),
+        (-1, 2),
+        (1, 2),
+        (2, 1),
+    ] {
+        let pos = match Position::new_i8(position.file() as i8 + x, position.rank() as i8 + y) {
+            Some(pos) => pos,
+            None => continue,
+        };
+        if Some(pos) == ignore_piece_at {
+            continue;
+        }
+        if board[pos].map_or(false, |piece| {
+            piece.kind == Kind::Knight && piece.color == color.other()
+        }) {
+            return true;
+        }
+    }
+    for (x, y, k) in [
+        (0, 1, Kind::Rook),
+        (1, 0, Kind::Rook),
+        (0, -1, Kind::Rook),
+        (-1, 0, Kind::Rook),
+        (1, 1, Kind::Bishop),
+        (1, -1, Kind::Bishop),
+        (-1, -1, Kind::Bishop),
+        (-1, 1, Kind::Bishop),
+    ] {
+        for i in 1..8 {
+            let pos = match Position::new_i8(
+                position.file() as i8 + i * x,
+                position.rank() as i8 + i * y,
+            ) {
+                Some(pos) => pos,
+                None => break,
+            };
+            if Some(pos) == ignore_piece_at {
+                continue;
+            }
+            if let Some(piece) = board[pos] {
+                if piece.color == color {
+                    break;
+                }
+                if piece.kind == k || piece.kind == Kind::Queen {
+                    return true;
+                }
+            }
+        }
+    }
+    for (x, y) in [(-1, color.forwards()), (1, color.forwards())] {
+        let pos = match Position::new_i8(position.file() as i8 + x, position.rank() as i8 + y) {
+            Some(pos) => pos,
+            None => continue,
+        };
+        if Some(pos) == ignore_piece_at {
+            continue;
+        }
+        if board[pos].map_or(false, |piece| {
+            piece.kind == Kind::Pawn && piece.color == color.other()
+        }) {
+            return true;
+        }
+    }
+    for (x, y) in [
+        (1, 0),
+        (1, -1),
+        (0, -1),
+        (-1, -1),
+        (-1, 0),
+        (-1, 1),
+        (0, 1),
+        (1, 1),
+    ] {
+        let pos = match Position::new_i8(position.file() as i8 + x, position.rank() as i8 + y) {
+            Some(pos) => pos,
+            None => continue,
+        };
+        if Some(pos) == ignore_piece_at {
+            continue;
+        }
+        if board[pos].map_or(false, |piece| {
+            piece.kind == Kind::King && piece.color == color.other()
+        }) {
+            return true;
+        }
+    }
+    false
+}
+
 /// Indicates whether a piece at `pos` is hiding a check for the king with
 /// `color`, i.e. in one direction there is a king with `color`, and in the other
 /// there is a piece with `color.other()` that can capture in that direction. If
@@ -65,7 +169,7 @@ pub fn position_hides_check(
 }
 
 /// Indicates if the piece at `pos` is being threatened from `dir` by a piece
-/// with color `color.other()`
+/// (either rook, bishop, or queen) with color `color.other()`
 pub fn threatened_from_dir(
     board: &Board,
     color: Color,
