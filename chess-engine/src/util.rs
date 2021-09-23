@@ -132,7 +132,7 @@ impl Position {
         }
     }
     pub fn new_i8(file: i8, rank: i8) -> Option<Self> {
-        if 0 < file && file < 8 && 0 < rank && rank < 8 {
+        if 0 <= file && file < 8 && 0 <= rank && rank < 8 {
             Some(Self {
                 file: file as u8,
                 rank: rank as u8,
@@ -143,6 +143,12 @@ impl Position {
     }
     pub fn new_unchecked(file: u8, rank: u8) -> Self {
         Self { file, rank }
+    }
+    pub fn new_i8_unchecked(file: i8, rank: i8) -> Self {
+        Self {
+            file: file as u8,
+            rank: rank as u8,
+        }
     }
     pub fn file(&self) -> u8 {
         self.file
@@ -170,7 +176,7 @@ impl FromStr for Position {
             _ => return Err(Error::ParsingError),
         };
         let rank = match s[1] {
-            c @ b'1'..=b'8' => c - b'1',
+            c @ b'1'..=b'8' => b'8' - c,
             _ => return Err(Error::ParsingError),
         };
         Ok(Self { file, rank })
@@ -183,7 +189,7 @@ impl fmt::Display for Position {
             f,
             "{}{}",
             (self.file + b'a') as char,
-            (self.rank + b'0') as char,
+            (b'8' - self.rank) as char,
         )
     }
 }

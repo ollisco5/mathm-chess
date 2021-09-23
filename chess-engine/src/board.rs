@@ -127,7 +127,7 @@ impl fmt::Display for Board {
                 .enumerate()
                 .map(|(i, row)| format!(
                     "{}{}\n",
-                    i + 1,
+                    8 - i,
                     row.iter()
                         .map(|p| format!(" {}", p.as_ref().map(Piece::emoji).unwrap_or('.')))
                         .collect::<String>()
