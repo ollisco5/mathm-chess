@@ -1,20 +1,7 @@
-use chess_engine::{piece, Board, Decider, Game, GameState, Move, Position};
+use chess_engine::{piece, Board, Game, GameState, Move, Position};
 use std::{io::BufRead, str::FromStr};
 
-struct D;
-
-impl Decider for D {
-    fn get_move(&mut self, board: &Board) -> Move {
-        unimplemented!()
-    }
-    fn get_pawn_promotion(&mut self) -> piece::Kind {
-        unimplemented!()
-    }
-}
-
 fn main() {
-    D.run(Board::default()).unwrap();
-
     let mut game = Game::new(Board::default());
     print!("{}", game.board().to_string());
     let stdin = std::io::stdin();
