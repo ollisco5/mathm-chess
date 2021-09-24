@@ -1,3 +1,5 @@
+//! For example uses, see `Decider`, and `Game`
+
 #![deny(warnings)]
 
 mod board;
@@ -8,7 +10,7 @@ pub mod piece;
 mod util;
 
 pub use board::Board;
-pub use decider::{run_with_decider, Decider};
+pub use decider::Decider;
 pub use error::Error;
 pub use game::{Game, GameState};
 pub use piece::Piece;

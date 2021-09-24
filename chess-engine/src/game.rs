@@ -1,5 +1,13 @@
 use crate::{piece, Board, Color, Error, Move, Piece, Position};
 
+/// # Example use:
+/// ```rust
+/// let mut game = Game::new(Board::default());
+/// loop {
+///     let move_: Move = /* ... */;
+///     match game.make_move(move_, a)
+/// }
+/// ```
 #[derive(Debug, Clone)]
 pub struct Game {
     board: Board,

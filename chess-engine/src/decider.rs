@@ -1,9 +1,14 @@
 use crate::{piece, Board, Error, Game, GameState, Move};
 
 /// # Example use:
-/// struct D;
+/// ```rust
+/// use chess_engine::{piece, Board, Decider};
 ///
-/// impl Decider for D {
+/// struct Application {
+///     /* all data needed to run the application, such as windows, etc. */
+/// }
+///
+/// impl Decider for Application {
 ///     fn get_move(&mut self, board: &Board) -> Move {
 ///         /* ... */
 ///     }
@@ -13,8 +18,10 @@ use crate::{piece, Board, Error, Game, GameState, Move};
 /// }
 ///
 /// fn main() {
-///     D.run(Board::default()).unwrap();
+///     let mut app = Application { /* */ };
+///     app.run(Board::default()).unwrap();
 /// }
+/// ```
 
 pub trait Decider {
     fn get_move(&mut self, board: &Board) -> Move;
@@ -29,18 +36,6 @@ pub trait Decider {
             if game_state != GameState::Ongoing {
                 break Ok(game_state);
             }
-        }
-    }
-}
-
-pub fn run_with_decider(board: Board, mut decider: impl Decider) -> Result<GameState, Error> {
-    let mut game = Game::new(board);
-    loop {
-        let game_state = game.make_move(decider.get_move(game.board()), || {
-            decider.get_pawn_promotion()
-        })?;
-        if game_state != GameState::Ongoing {
-            break Ok(game_state);
         }
     }
 }

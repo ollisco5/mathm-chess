@@ -77,6 +77,7 @@ fn perft_1() {
     assert_eq!(20, perft(game.clone(), 1));
     assert_eq!(400, perft(game.clone(), 2));
     assert_eq!(8902, perft(game.clone(), 3));
+    assert_eq!(197281, perft(game.clone(), 4));
 }
 
 #[test]
