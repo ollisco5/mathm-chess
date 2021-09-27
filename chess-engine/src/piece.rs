@@ -1,4 +1,4 @@
-use crate::{Board, Color, Error, Move, Position};
+use crate::{Board, Color, Error, Position};
 
 mod bishop;
 mod king;
@@ -22,6 +22,29 @@ pub enum Kind {
     Bishop,
     Queen,
     King,
+}
+
+pub enum Moves<'b> {
+    Pawn(pawn::Moves<'b>),
+    Rook(rook::Moves<'b>),
+    Knight(knight::Moves<'b>),
+    Bishop(bishop::Moves<'b>),
+    Queen(queen::Moves<'b>),
+    King(king::Moves<'b>),
+}
+
+impl<'b> Iterator for Moves<'b> {
+    type Item = Position;
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            Self::Pawn(moves) => moves.next(),
+            Self::Rook(moves) => moves.next(),
+            Self::Knight(moves) => moves.next(),
+            Self::Bishop(moves) => moves.next(),
+            Self::Queen(moves) => moves.next(),
+            Self::King(moves) => moves.next(),
+        }
+    }
 }
 
 impl Piece {
@@ -63,36 +86,14 @@ impl Piece {
             self.kind.name()
         }
     }
-    /// Returns whether the piece at `move_.from` legally can move to
-    /// `move_.to`.
-    pub fn can_move(&self, move_: Move, board: &Board) -> bool {
-        // if in check:
-        //     if only one piece is checking king:
-        //         either:
-        //             must capture checker
-        //         or:
-        //             must place oneself in the way
-        //     else:
-        //         must move king
-        //
-        // else:
-        //     avoid revealed checks
-
-        self.get_moves(board, move_.from).contains(&move_.to)
-    }
-    pub fn get_moves(&self, board: &Board, from: Position) -> Vec<Position> {
-        let mut ret = vec![];
-        self.append_moves(board, from, &mut ret);
-        ret
-    }
-    pub fn append_moves(&self, board: &Board, from: Position, dst: &mut Vec<Position>) {
+    pub fn moves<'b>(&self, board: &'b Board, from: Position) -> Moves<'b> {
         match self.kind {
-            Kind::Pawn => pawn::append_moves(board, from, dst),
-            Kind::Rook => rook::append_moves(board, from, dst),
-            Kind::Knight => knight::append_moves(board, from, dst),
-            Kind::Bishop => bishop::append_moves(board, from, dst),
-            Kind::Queen => queen::append_moves(board, from, dst),
-            Kind::King => king::append_moves(board, from, dst),
+            Kind::Pawn => Moves::Pawn(pawn::Moves::new(board, from)),
+            Kind::Rook => Moves::Rook(rook::Moves::new(board, from)),
+            Kind::Knight => Moves::Knight(knight::Moves::new(board, from)),
+            Kind::Bishop => Moves::Bishop(bishop::Moves::new(board, from)),
+            Kind::Queen => Moves::Queen(queen::Moves::new(board, from)),
+            Kind::King => Moves::King(king::Moves::new(board, from)),
         }
     }
     pub fn checks(&self, at: Position, board: &Board) -> bool {

@@ -136,34 +136,76 @@ pub fn floating_checks(deltas: &[(i8, i8)], at: Position, color: Color, board: &
     false
 }
 
-pub fn floating_moves(deltas: &[(i8, i8)], board: &Board, from: Position, dst: &mut Vec<Position>) {
-    let color = board[from].unwrap().color;
-    for (x, y) in deltas {
-        for i in 1..8 {
-            let pos = match Position::new_i8(from.file() as i8 + i * x, from.rank() as i8 + i * y) {
+pub struct Moves<'b> {
+    board: &'b Board,
+    from: Position,
+    color: Color,
+    dir_index: u8,
+    dist: i8,
+    dirs: &'static [(i8, i8)],
+}
+
+impl<'b> Moves<'b> {
+    pub fn new(board: &'b Board, from: Position, dirs: &'static [(i8, i8)]) -> Self {
+        Self {
+            board,
+            from,
+            color: board[from].unwrap().color,
+            dir_index: 0,
+            dist: 1,
+            dirs,
+        }
+    }
+}
+
+impl<'b> Iterator for Moves<'b> {
+    type Item = Position;
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            let dir = self.dirs.get(self.dir_index as usize)?;
+            let pos = match Position::new_i8(
+                self.from.file() as i8 + dir.0 * self.dist,
+                self.from.rank() as i8 + dir.1 * self.dist,
+            ) {
                 Some(pos) => pos,
-                None => break,
+                None => {
+                    self.dir_index += 1;
+                    self.dist = 1;
+                    continue;
+                }
             };
 
-            let target_color = board[pos].map(|p| p.color);
-
-            if target_color == Some(color) {
-                break;
-            }
-
-            if !threatened_at(
-                board.get_king_position(color),
-                &[from],
-                &[pos],
-                color,
-                board,
-            ) {
-                dst.push(pos);
-            }
-
-            if target_color.is_some() {
-                break;
-            }
+            break match self.board[pos].map(|p| p.color) {
+                None => {
+                    self.dist += 1;
+                    if threatened_at(
+                        self.board.get_king_position(self.color),
+                        &[self.from],
+                        &[pos],
+                        self.color,
+                        self.board,
+                    ) {
+                        continue;
+                    }
+                    Some(pos)
+                }
+                Some(c) => {
+                    self.dir_index += 1;
+                    self.dist = 1;
+                    if c == self.color
+                        || threatened_at(
+                            self.board.get_king_position(self.color),
+                            &[self.from],
+                            &[pos],
+                            self.color,
+                            self.board,
+                        )
+                    {
+                        continue;
+                    }
+                    Some(pos)
+                }
+            };
         }
     }
 }
