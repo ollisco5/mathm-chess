@@ -4,7 +4,7 @@ use ggez::event::{self, EventHandler};
 use ggez::filesystem;
 use ggez::conf::WindowMode;
 
-const ICON: &'static str = "resources/icon.png";
+//const ICON: &'static str = "resources/wN.png";
 
 fn main() {
     // Make a Context.
@@ -16,13 +16,14 @@ fn main() {
         .build()
         .expect("Could not create ggez context!");
     graphics::set_window_title(&context, "Tjack!");
+    /*
     let result = graphics::set_window_icon(&mut context, Some(ICON));
     
     match result {
         Ok(()) => (),
         Err(err) => println!("ICON NOT LOADED: {}", err),
     }
-    
+    */
     
     // Create an instance of your event handler.
     // Usually, you should provide it with the Context object to
