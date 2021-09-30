@@ -20,8 +20,7 @@ fn main() {
                 Some(piece) => println!(
                     "{}",
                     piece
-                        .get_moves(game.board(), pos)
-                        .iter()
+                        .moves(game.board(), pos)
                         .fold(String::new(), |acc, p| format!("{} {}", acc, p))
                 ),
                 None => {}
