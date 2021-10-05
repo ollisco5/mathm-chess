@@ -1,10 +1,11 @@
 [package]
 name = "gui"
+authors = ["olle.jernstrom <olle.jernstrom@gmail.com>"]
 version = "0.1.0"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = "0.5"
+bevy = {version = "0.5", default_features = false, features = ["bevy_audio", "bevy_gltf", "bevy_winit", "bevy_wgpu", "render", "bevy_dynamic_plugin", "png", "hdr", "x11"] }
 chess-engine = { path = "../chess-engine"}

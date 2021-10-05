@@ -1,4 +1,7 @@
 #![allow(unused)]
+
+mod server;
+
 use std::{io::BufRead, str::FromStr, time};
 
 use chess_engine::{
@@ -106,6 +109,12 @@ fn run_main(game: Res<Game>) -> ShouldRun {
 
 
 fn main() {
+    println!("I LIKE CHEESE");    
+
+    build_app();
+}
+
+fn build_app() {
     App::build()
         .insert_resource(WindowDescriptor {
             title: "Tjack!".to_string(),
