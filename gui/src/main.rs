@@ -3,6 +3,9 @@
 mod server;
 
 use std::{io::BufRead, str::FromStr, time};
+use std::thread;
+
+use server::Server;
 
 use chess_engine::{
     self,
@@ -84,6 +87,8 @@ struct PieceHighlight {
     pos: Position,
 }
 
+
+
 struct WindowSize {
     width: f32,
     height: f32,
@@ -111,10 +116,6 @@ fn run_main(game: Res<Game>) -> ShouldRun {
 fn main() {
     println!("I LIKE CHEESE");    
 
-    build_app();
-}
-
-fn build_app() {
     App::build()
         .insert_resource(WindowDescriptor {
             title: "Tjack!".to_string(),
@@ -145,8 +146,41 @@ fn build_app() {
                 .with_system(handle_mouse_click_for_promotion.system())
                 
         )
+
         .run();
+
+
+    build_app();
+    /* 
+    let mut server = server::Server::new();
+    let mut g = chess_engine::Game::new(chess_engine::Board::default());
+    let host = true;
+    
+    println!("Calling server.run");
+    loop {
+        println!("LOOP");
+        let _u = server.run(&mut g);
+    }   
+    */ 
+    
+    
+    
 }
+
+fn build_app() {
+    println!("Building App");
+    
+
+    println!("End build");
+}
+
+fn server_system(
+    mut server: ResMut<Server>,
+    mut game: ResMut<Game>,
+) {
+    let _r = server.run(&mut game.game);
+}
+
 fn promotion_options_despawn_system(
     mut commands: Commands,
     mut highlighted_piece: Query<(Entity, With<PromotionOption>)>,
@@ -210,6 +244,7 @@ fn promotion_sprite_spawn(commands: &mut Commands, sprite: Handle<ColorMaterial>
 }
 
 
+
 fn dummy_system(
     mut commands: Commands,
     game: Res<Game>,    
@@ -227,6 +262,7 @@ fn setup_system(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut windows: ResMut<Windows>,
 ) {
+    println!("Setting up system");
     let mut window = windows.get_primary_mut().unwrap();
     let mut game = chess_engine::Game::new(chess_engine::Board::default());
 
@@ -253,6 +289,7 @@ fn setup_system(
         black_queen: materials.add(asset_server.load(BLACK_QUEEN_SPRITE).into()),
     });
 
+    //commands.insert_resource(Server::new());
 
     commands.insert_resource(Game{
             game, 
@@ -269,7 +306,7 @@ fn setup_system(
 
 fn board_spawn(mut commands: Commands, materials: Res<Materials>, window_size: Res<WindowSize>) {
     // spawn background sprite
-   
+    println!("Spawning board");
     commands.spawn_bundle(SpriteBundle {
         material: materials.board.clone(),
         transform: Transform {
@@ -287,6 +324,7 @@ fn pieces_spawn(
     game: Res<Game>,
     window_size: Res<WindowSize>,
 ) {
+    println!("DDbud");
     let tiles = game.game.board().tiles(); // TODO: REFACTOR
     let tile_size = window_size.width / 8.;
 
